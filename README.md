@@ -22,10 +22,10 @@ An end-to-end **SQL-first** data analytics project: a flat retail CSV is modelle
 ## 📈 Key Findings (real, from the data)
 
 - **$2.30M** total sales · **$286K** total profit · **12.5%** overall margin
-- **Technology** is the top category (**37.3%** of sales), but **Furniture** has the thinnest margin
+- **Technology** is the top category (**36.4%** of sales), but **Furniture** has the thinnest margin
 - **West** region leads sales (**31.8%**), **South** lags (**17.0%**)
-- The single biggest money-loser is **Binders** (−$40.7K in losses across 627 unprofitable rows)
-- **1,871** order lines (≈19% of all) are sold at a loss
+- The single biggest money-loser is **Binders** ($38.5K in losses across 613 unprofitable rows)
+- **1,871** order lines (about 19% of all) are sold at a loss
 
 ---
 
@@ -33,7 +33,7 @@ An end-to-end **SQL-first** data analytics project: a flat retail CSV is modelle
 
 ```
 fact_sales (9,994 rows)  ──┬── dim_customer (793 rows)
-                           ├── dim_product  (1,894 rows)
+                           ├── dim_product  (1,862 rows)
                            ├── dim_location (632 rows)
                            └── dim_date     (3,472 rows)
 ```

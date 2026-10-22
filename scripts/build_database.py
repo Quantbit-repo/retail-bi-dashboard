@@ -48,14 +48,34 @@ def build_schema(con: duckdb.DuckDBPyConnection) -> None:
         FROM raw_sales
     """)
 
+    # The source CSV reuses a Product ID for more than one product name (32 ids).
+    # A straight DISTINCT therefore leaves duplicate keys and any join to this
+    # dimension inflates measures. Keep one row per product_id, using the most
+    # frequent name. All duplicates agree on category and sub category, so no
+    # category level analysis changes.
     con.execute("""
         CREATE TABLE dim_product AS
-        SELECT DISTINCT
-            "Product ID"   AS product_id,
-            "Product Name" AS product_name,
-            "Category"     AS category,
-            "Sub-Category" AS sub_category
-        FROM raw_sales
+        WITH counts AS (
+            SELECT
+                "Product ID"   AS product_id,
+                "Product Name" AS product_name,
+                "Category"     AS category,
+                "Sub-Category" AS sub_category,
+                COUNT(*)       AS name_count
+            FROM raw_sales
+            GROUP BY 1, 2, 3, 4
+        ),
+        ranked AS (
+            SELECT *,
+                   ROW_NUMBER() OVER (
+                       PARTITION BY product_id
+                       ORDER BY name_count DESC, product_name
+                   ) AS rn
+            FROM counts
+        )
+        SELECT product_id, product_name, category, sub_category
+        FROM ranked
+        WHERE rn = 1
     """)
 
     con.execute("""
